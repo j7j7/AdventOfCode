@@ -51,13 +51,16 @@ for ($y = 0; $y < count($lines); $y++) {
                 if ($adjX >= 0 && $adjX < $width && $adjY >= 0 && $adjY < count($lines)) {
                     $adjacentChar = $lines[$adjY][$adjX];
                     // Check if the adjacent character is a symbol
-                    if (in_array($adjacentChar, ['*', '+', '#'])) {
+                    if (in_array($adjacentChar, ['*', '+', '#', '$'])) {
                         $touches = true;
                         break;
                     }
                 }
             }
-        } elseif ($char == '.' || $char == '*' || $char == '+' || $char == '#' || $x == $width - 1) {
+        } 
+
+        // If the current character is not a digit, or it's the last digit in the line
+        if (!ctype_digit($char) || $x == $width - 1) {
             // If touches flag is set and num is not empty
             if ($touches && $num !== '') {
                 // Add the value of num to the total_sum
