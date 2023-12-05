@@ -60,7 +60,7 @@ function decodeString($str) {
 
     if ($firstDigit !== null && $lastDigit !== null) {
         if (strlen($str) == 1) {
-            return $firstDigit . $lastDigit;
+            return $firstDigit . $firstDigit;
         } else {
             return $firstDigit . $lastDigit;
         }
