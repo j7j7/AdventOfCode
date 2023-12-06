@@ -14,7 +14,7 @@ function addBlankRow($grid, $width) {
     $grid[] = $blankRow;
     return $grid;
 }
-//test data
+
 $fileContent = "
 467..114..
 ...*......
@@ -34,11 +34,16 @@ $fileContent = file_get_contents('day3.txt');
 $grid = convertToGrid($fileContent);
 $width = count($grid[0]);
 $grid = addBlankRow($grid, $width);
+$grid = addBlankRow($grid, $width);
 $total_sum = 0;
 $num = '';
 $touches = false;
 $height = count($grid);
 echo "grid is " . $width . " by " . $height . "\n";
+
+$numberPairs = [];
+$starId = 0;
+$starNumbers = [];
 
 for ($y = 0; $y < $height; $y++) {
     for ($x = 0; $x < $width; $x++) {
@@ -58,8 +63,9 @@ for ($y = 0; $y < $height; $y++) {
 
                 if ($adjX >= 0 && $adjX < $width && $adjY >= 0 && $adjY < $height) {
                     $adjacentChar = $grid[$adjY][$adjX];
-                    if (!ctype_digit($adjacentChar) && $adjacentChar != '.') {
+                    if ($adjacentChar == '*') {
                         $touches = true;
+                        $starId = $adjX . $adjY; // unique id for each star
                     }
                 }
             }
@@ -67,8 +73,7 @@ for ($y = 0; $y < $height; $y++) {
 
         if (!ctype_digit($char) || $x == $width - 1 || $y == $height - 1) {
             if ($touches && $num !== '') {
-                $total_sum += (int)$num;
-                echo $num . "\n";
+                $starNumbers[$starId][] = $num;
             }
             $num = '';
             $touches = false;
@@ -76,12 +81,15 @@ for ($y = 0; $y < $height; $y++) {
     }
 }
 
-// Check if the last number hasn't been added yet
-if ($touches && $num !== '') {
-    $total_sum += (int)$num;
-    echo $num . "\n";
+foreach ($starNumbers as $numbers) {
+    if (count($numbers) == 2) {
+        $product = $numbers[0] * $numbers[1];
+        $total_sum += $product;
+        echo $numbers[0] . " * " . $numbers[1] . " = " . $product . "\n";
+    } else {
+        echo $numbers[0] . " = not a pair, ignore\n";
+    }
 }
 
 echo "Total sum: " . $total_sum . "\n";
-
 ?>
