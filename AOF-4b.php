@@ -8,9 +8,8 @@ Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
 Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 ";
 
-
 //real data
-//$fileContent = file_get_contents('day4.txt');
+$fileContent = file_get_contents('day4.txt');
 
 $lines = explode("\n", trim($fileContent));
 $cards = [];
@@ -30,75 +29,33 @@ foreach ($lines as $line) {
         }
     }
 
-
-    $card = [
+    $cards[] = [
         'cardNumber' => $cardNumber,
-        'winningNumbers' => array_filter($winningNumbers),
-        'yourNumbers' => array_filter($yourNumbers),
-        'matchingNumbers' => array_filter($matchingNumbers)
-    ];
-    $cards[] = $card;
-}
-
-$jsonData = json_encode($cards, JSON_PRETTY_PRINT);
-//echo $jsonData . "\n";
-
-
-// After processing the first JSON card
-$newCardData = [];
-foreach ($cards as $index => $card) {
-    $newCardData[] = [
-        'cardRef' => $index + 1, // Set cardRef as the loop counter
-        'cardValue' => count($card['matchingNumbers']),
-        'cardFlipped' => false
+        'matchingNumbers' => array_filter($matchingNumbers),
+        'copies' => 1 // Initialize copies count to 1 for each card
     ];
 }
 
-$newCardJson = json_encode($newCardData, JSON_PRETTY_PRINT);
-echo $newCardJson . "\n";
-
-
-$newCardData = json_decode($newCardJson, true);
-$newCards = $newCardData;
-
-$processedCards = [];
-$processingRequired = true;
-$count = 0;
-while ($processingRequired) {
-    $processingRequired = false;
-    $tempNewCards = $newCards;
-    foreach ($newCards as &$card) {
-        if (!$card['cardFlipped']) {
-            $cardRef = (int)$card['cardRef']; // Explicitly cast to integer
-            $cardValue = $card['cardValue'];
-            for ($i = 1; $i <= $cardValue; $i++) {
-                $nextCardRef = str_pad($cardRef + $i, 2, '0', STR_PAD_LEFT); // Start with the next value
-                $tempNewCards[] = [
-                    'cardRef' => $nextCardRef,
-                    'cardValue' => 0,
-                    'cardFlipped' => false
-                ];
-                $processingRequired = true;
-                echo "Created duplicate: " . $nextCardRef . "\n"; // Output the next card reference
+function processCards(&$cards) {
+    $totalCards = count($cards);
+    for ($i = 0; $i < $totalCards; $i++) {
+        $cardValue = count($cards[$i]['matchingNumbers']);
+        for ($j = 1; $j <= $cardValue; $j++) {
+            $nextCardIndex = $i + $j;
+            if ($nextCardIndex < $totalCards) {
+                $cards[$nextCardIndex]['copies'] += $cards[$i]['copies'];
             }
-            $card['cardFlipped'] = true; // Set current card's cardFlipped to true
-            echo "Card flipped : " . $cardRef . "\n";
         }
-        $processedCards[] = $card['cardRef'];
-        $count ++;
-        if ($count > 10000) break;
     }
-    $newCards = $tempNewCards;
-    unset($card); // Unset reference to last element
 }
 
-$newCardData = json_decode($newCardJson, true);
-$newCards = $newCardData;
+processCards($cards);
 
-$processedCards = [];
-$processingRequired = true;
-
-
-
-//echo "Total Cards: " . $TotalCards;
+echo "Processed Cards:\n";
+$totalCopies = 0;
+foreach ($cards as $card) {
+    echo $card['cardNumber'] . ": Copies - " . $card['copies'] . "\n";
+    $totalCopies += $card['copies'];
+}
+echo "Total number of scratchcards: " . $totalCopies . "\n";
 ?>

@@ -10,6 +10,7 @@ QQQJA 483
 
 //real data
 $fileContent = file_get_contents('day7.txt');
+$order = 'AKQJT98765432'; // Define the order from highest to lowest
 
 function sortHand($hand) {
     $order = 'AKQJT98765432'; // Define the order from highest to lowest
@@ -62,32 +63,28 @@ foreach ($lines as $line) {
 print_r($matchedRules);
 
 // Sort the matched rules by hand strength and then by original hand (cardInput)
-usort($matchedRules, function ($a, $b) {
+usort($matchedRules, function ($a, $b) use ($order) {
     $strengthComparison = getHandStrength($b['matchedRule']) - getHandStrength($a['matchedRule']);
     if ($strengthComparison === 0) {
-        // If hand types are the same, compare the original hands lexicographically
-        return strcmp($a['cardInput'], $b['cardInput']);
+        // If hand types are the same, compare the original hands based on custom order
+        for ($i = 0; $i < strlen($a['cardInput']); $i++) {
+            $posA = strpos($order, $a['cardInput'][$i]);
+            $posB = strpos($order, $b['cardInput'][$i]);
+            if ($posA !== $posB) {
+                return $posA - $posB;
+            }
+        }
+        return 0;
     }
     return $strengthComparison;
 });
 
 
 
+
 // Assign ranks with consideration for duplicates
 $totalHands = count($matchedRules);
 $rank = $totalHands;
-// $previousHandType = '';
-
-// foreach ($matchedRules as $key => $matchedRule) {
-//     if ($matchedRule['matchedRule'] !== $previousHandType) {
-//         // Assign the current rank and decrement for the next hand
-//         $matchedRules[$key]['rank'] = $rank--;
-//         $previousHandType = $matchedRule['matchedRule'];
-//     } else {
-//         // If the hand type is the same as the previous, keep the same rank
-//         $matchedRules[$key]['rank'] = $rank;
-//     }
-// }
 
 // Assign ranks with unique numbers
 $rank = $totalHands;
