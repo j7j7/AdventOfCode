@@ -4,7 +4,7 @@ $fileContent = "two1nine
 eightwothree
 abcone2threexyz
 xtwone3four
-4nineeightseven2
+4nineightseven2
 zoneight234
 7pqrstsixteen
 ";
@@ -80,16 +80,26 @@ function decodeString2($str) {
             continue;
         }
 
+        $matched = false;
         for ($j = 0; $j < count($words); $j++) {
-            if (substr($str, $i, strlen($words[$j])) == $words[$j]) {
+            $wordLength = strlen($words[$j]);
+            if (substr($str, $i, $wordLength) == $words[$j]) {
                 $newStr .= $numbers[$j];
-                $i += strlen($words[$j]) - 1;
+                $i += $wordLength - 1;
+                $matched = true;
                 break;
             }
+        }
+
+        if ($matched) {
+            // Move the pointer back by one to reuse the letter, if needed
+            $i--;
         }
     }
     echo " into: " . $newStr . " | ";
     return $newStr;
 }
+
+
 
 ?>

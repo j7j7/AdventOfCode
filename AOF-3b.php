@@ -15,6 +15,24 @@ function addBlankRow($grid, $width) {
     return $grid;
 }
 
+function padFileContent($fileContent) {
+    $rows = explode("\n", trim($fileContent));
+    $paddedContent = "";
+
+    // Add a line with all . at the beginning
+    $paddedContent .= str_repeat(".", strlen($rows[0]) + 2) . "\n";
+
+    foreach ($rows as $row) {
+        // Add a single . to the start and end of each line
+        $paddedContent .= "." . $row . ".\n";
+    }
+
+    // Add a line with all . at the end
+    $paddedContent .= str_repeat(".", strlen($rows[0]) + 2) . "\n";
+
+    return $paddedContent;
+}
+
 $fileContent = "
 467..114..
 ...*......
@@ -28,12 +46,14 @@ $fileContent = "
 .664.598..
 ";
 
+$paddedContent = padFileContent($fileContent);
+echo $paddedContent;
+
 //real data
 $fileContent = file_get_contents('day3.txt');
 
 $grid = convertToGrid($fileContent);
 $width = count($grid[0]);
-$grid = addBlankRow($grid, $width);
 $grid = addBlankRow($grid, $width);
 $total_sum = 0;
 $num = '';
